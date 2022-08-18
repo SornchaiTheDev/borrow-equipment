@@ -7,7 +7,7 @@ import BorrowCode from "../Components/BorrowCode";
 
 function Home() {
   const [isBorrow, setIsBorrow] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>(true);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   const handleOnSuccess = () => {
     setIsBorrow(false);

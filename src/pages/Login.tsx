@@ -1,6 +1,6 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import InputForm from "../Components/InputForm";
-import SignInBtn from "../Components/SignInBtn";
+import AsyncBtn from "../Components/AsyncBtn";
 import { useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
@@ -20,18 +20,28 @@ function Login() {
       <div className="flex flex-col w-full max-w-sm p-4  rounded-2xl bg-white shadow-sm py-4  items-center">
         <h2 className="text-2xl font-bold">มายืมกัน</h2>
         <div className="my-4 flex w-full flex-col gap-6 items-center">
-          <InputForm size="text-md" title="ชื่อผู้ใช้" placeholder="" />
+          <InputForm
+            size="text-md"
+            title="ชื่อผู้ใช้"
+            value={username}
+            onChange={(e: FormEvent<HTMLInputElement>) =>
+              setUsername(e.currentTarget.value)
+            }
+          />
           <InputForm
             size="text-md"
             type="password"
             title="รหัสผ่าน"
-            placeholder=""
+            value={password}
+            onChange={(e: FormEvent<HTMLInputElement>) =>
+              setPassword(e.currentTarget.value)
+            }
           />
         </div>
-        <SignInBtn
+        <AsyncBtn
           title="เข้าสู่ระบบ"
           onClick={handleOnSignIn}
-          isSubmit={isSubmit}
+          isDisabled={isSubmit}
         />
         <h2 className="mt-4">
           ยังไม่เป็นสมาชิก ?{" "}

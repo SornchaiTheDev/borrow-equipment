@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import InputForm from "../Components/InputForm";
-import SignInBtn from "../Components/SignInBtn";
+import AsyncBtn from "../Components/AsyncBtn";
 import { useNavigate } from "react-router-dom";
 function Login() {
   const [username, setUsername] = useState("");
@@ -28,10 +28,10 @@ function Login() {
             placeholder=""
           />
         </div>
-        <SignInBtn
+        <AsyncBtn
           title="สมัครสมาชิก"
           onClick={handleOnSignIn}
-          isSubmit={isSubmit}
+          isDisabled={isSubmit}
         />
         <h2 className="mt-4">
           เป็นสมาชิกอยู่แล้ว ?{" "}

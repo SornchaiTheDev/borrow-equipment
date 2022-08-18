@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
-import Button from "../Components/Button";
+import {
+  AiOutlinePlus,
+  AiOutlineMinus,
+  AiOutlineLoading3Quarters,
+} from "react-icons/ai";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { GrFormClose } from "react-icons/gr";
+import { TextField } from "@mui/material";
 
 interface BorrowProps {
   amount: number;
@@ -10,8 +15,13 @@ interface BorrowProps {
 }
 
 function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
+  const [isBorrow, setIsBorrow] = useState<boolean>(false);
   const [borrowAmount, setBorrowAmount] = useState<number>(1);
   const [isAccept, setIsAccept] = useState<boolean>(false);
+
+  const [borrowDate, setBorrowDate] = useState<Date | null>(
+    new Date("2022-08-13T21:11:54")
+  );
 
   const handleAmount = ({ type }: { type: "INCREMENT" | "DECREMENT" }) => {
     if (borrowAmount < 2 && type === "DECREMENT") return;
@@ -22,7 +32,15 @@ function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
 
   const handleBorrow = () => {
     if (!isAccept) return;
-    onSuccess();
+    setIsBorrow(true);
+    setTimeout(() => {
+      setIsBorrow(false);
+      onSuccess();
+    }, 1000);
+  };
+
+  const handleChange = (newValue: Date | null) => {
+    setBorrowDate(newValue);
   };
 
   return (
@@ -57,6 +75,15 @@ function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
             <AiOutlinePlus size="1.25rem" />
           </button>
         </div>
+        <div className="mt-4">
+          <DateTimePicker
+            label="วันที่/เวลาที่ยืม"
+            value={borrowDate}
+            onChange={handleChange}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </div>
+
         <div className="inline-flex items-center gap-2">
           <input
             id="consent"
@@ -69,11 +96,19 @@ function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
           </label>
         </div>
         <div className="w-2/3">
-          <Button
-            title="ยืนยันการยืม"
+          <button
+            disabled={!isAccept}
+            className="bg-gray-900 disabled:bg-gray-300 rounded-full px-4 py-3 text-white transition-all duration-300 inline-flex justify-center items-center w-full"
             onClick={handleBorrow}
-            isDisabled={!isAccept}
-          />
+          >
+            {isBorrow ? (
+              <div className="animate-spin py-1">
+                <AiOutlineLoading3Quarters />
+              </div>
+            ) : (
+              "ยืนยันการยืม"
+            )}
+          </button>
         </div>
       </div>
     </div>
