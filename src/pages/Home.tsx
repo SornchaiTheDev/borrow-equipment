@@ -3,13 +3,27 @@ import Item from "../Components/Item";
 import Profile from "../Components/Profile";
 import SearchBox from "../Components/SearchBox";
 import Borrow from "../Components/Borrow";
+import BorrowCode from "../Components/BorrowCode";
 
 function Home() {
   const [isBorrow, setIsBorrow] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(true);
+
+  const handleOnSuccess = () => {
+    setIsBorrow(false);
+    setIsSuccess(true);
+  };
+
   return (
     <>
-      {isBorrow && <Borrow amount={10} onClose={() => setIsBorrow(false)} />}
-
+      {isBorrow && (
+        <Borrow
+          amount={10}
+          onClose={() => setIsBorrow(false)}
+          onSuccess={handleOnSuccess}
+        />
+      )}
+      {isSuccess && <BorrowCode onClose={() => setIsSuccess(false)} />}
       <div className="py-4 px-4 md:px-16 min-h-screen flex justify-center items-center w-full">
         <div className="flex flex-col max-w-xl p-4  rounded-2xl bg-white shadow-sm py-4 w-full gap-4">
           <div className="flex items-center justify-between">

@@ -6,16 +6,23 @@ import { GrFormClose } from "react-icons/gr";
 interface BorrowProps {
   amount: number;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-function Borrow({ amount, onClose }: BorrowProps) {
+function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
   const [borrowAmount, setBorrowAmount] = useState<number>(1);
   const [isAccept, setIsAccept] = useState<boolean>(false);
+
   const handleAmount = ({ type }: { type: "INCREMENT" | "DECREMENT" }) => {
     if (borrowAmount < 2 && type === "DECREMENT") return;
     if (borrowAmount >= amount && type === "INCREMENT") return;
     if (type === "INCREMENT") setBorrowAmount(borrowAmount + 1);
     if (type === "DECREMENT") setBorrowAmount(borrowAmount - 1);
+  };
+
+  const handleBorrow = () => {
+    if (!isAccept) return;
+    onSuccess();
   };
 
   return (
@@ -62,7 +69,11 @@ function Borrow({ amount, onClose }: BorrowProps) {
           </label>
         </div>
         <div className="w-2/3">
-          <Button title="ยืนยันการยืม" onClick={() => {}} isDisabled={false} />
+          <Button
+            title="ยืนยันการยืม"
+            onClick={handleBorrow}
+            isDisabled={!isAccept}
+          />
         </div>
       </div>
     </div>
