@@ -1,30 +1,13 @@
-import { AiTwotoneCalendar, AiOutlineClockCircle } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-const HistoryCard = () => {
-  return (
-    <div className="flex flex-col bg-white shadow-md px-4 gap-2 rounded-lg">
-      <h2 className="text-lg">ยืมฟุตบอล 2 ลูก</h2>
-      <div className="flex flex-wrap gap-2">
-        <div className="inline-flex items-center gap-2">
-          <AiTwotoneCalendar />
-          <h4 className="text-sm">11 พ.ค 2565</h4>
-        </div>
-        <p>•</p>
-        <div className="inline-flex items-center gap-2">
-          <AiOutlineClockCircle />
-          <h4 className="text-sm">11 พ.ค 2565</h4>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 function Profile() {
   const navigate = useNavigate();
+
+  const handleLogout = () => {};
   return (
-    <div className="py-4 px-16 h-screen flex flex-col justify-center items-center w-full">
-      <div className="bg-white w-full max-w-sm rounded-lg py-4">
+    <div className="py-4 px-4 md:px-16 h-screen flex flex-col justify-center items-center w-full">
+      <div className="bg-white w-full max-w-md rounded-lg py-4">
         <button
           className="inline-flex items-center gap-2 p-4"
           onClick={() => navigate("/")}
@@ -131,6 +114,14 @@ function Profile() {
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div className="flex justify-end mt-4">
+            <button
+              className="bg-red-300 text-red-500 p-2 rounded-lg "
+              onClick={handleLogout}
+            >
+              ออกจากระบบ
+            </button>
           </div>
         </div>
       </div>

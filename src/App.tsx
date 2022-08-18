@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Info from "./pages/Info";
 import Profile from "./pages/Profile";
+import Borrow from "./pages/Borrow";
 function App() {
   return (
     <BrowserRouter>
@@ -13,6 +14,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/info" element={<Info />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/borrow" element={<Borrow />} />
       </Routes>
     </BrowserRouter>
   );
