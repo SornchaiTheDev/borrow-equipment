@@ -1,10 +1,15 @@
 import { BsArrowLeft } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import { signOut } from "firebase/auth";
 
 function Profile() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    signOut(auth);
+    navigate("/login");
+  };
   return (
     <div className="py-4 px-4 md:px-16 h-screen flex flex-col justify-center items-center w-full">
       <div className="bg-white w-full max-w-md rounded-lg py-4">
@@ -16,13 +21,13 @@ function Profile() {
           <h4>กลับหน้าหลัก</h4>
         </button>
         <div className="flex flex-col items-center gap-2">
-          <div className="w-32 rounded-full overflow-hidden shadow-md border-4 border-white mt-4">
+          <div className="w-32 h-32 rounded-full overflow-hidden shadow-md border-4 border-white mt-4 flex items-center">
             <img
-              src="https://randomuser.me/api/portraits/men/21.jpg"
+              src="https://cdn.dribbble.com/users/1577045/screenshots/4914645/media/028d394ffb00cb7a4b2ef9915a384fd9.png?compress=1&resize=400x300&vertical=top"
               className="w-full"
             />
           </div>
-          <h2 className="text-xl underline decoration-dotted mb-2">โชกุนนน</h2>
+          <h2 className="text-xl underline decoration-dotted my-2">โชกุนนน</h2>
 
           <h3 className="font-bold">เลขประจำตัวนักเรียน</h3>
           <h2>41302</h2>

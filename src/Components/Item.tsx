@@ -3,14 +3,15 @@ interface ItemProps {
   icon: string;
   amount: number;
   onClick: () => void;
+  disabled?: boolean;
 }
 
-function Item({ name, icon, amount, onClick }: ItemProps) {
+function Item({ name, icon, amount, onClick, disabled }: ItemProps) {
   return (
     <button
       onClick={onClick}
       className={`w-full  col-span-3 md:col-span-2 ${
-        amount === 0 ? "cursor-not-allowed" : "cursor-pointer"
+        amount === 0 || disabled ? "cursor-not-allowed" : "cursor-pointer"
       }`}
     >
       <div className="flex flex-col bg-white p-4 shadow-md shadow-gray-100 rounded-lg">
@@ -18,7 +19,7 @@ function Item({ name, icon, amount, onClick }: ItemProps) {
           <img
             src={icon}
             alt={`${name}`}
-            className={`w-full ${amount === 0 && "grayscale"}`}
+            className={`w-full ${amount === 0  || disabled && "grayscale"}`}
           />
         </div>
         <div className="flex flex-col bg-white w-full mt-2">

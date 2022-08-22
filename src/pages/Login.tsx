@@ -2,23 +2,34 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import InputForm from "../Components/InputForm";
 import AsyncBtn from "../Components/AsyncBtn";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmit, setIsSubmit] = useState(false);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   const handleOnSignIn = () => {
     setIsSubmit(true);
-    setTimeout(() => {
-      navigate("/", { replace: true });
-      setIsSubmit(false);
-    }, 1000);
+    signInWithEmailAndPassword(
+      auth,
+      `${username}@borrow-equipment.com`,
+      password
+    )
+      .then(() => navigate("/", { replace: true }))
+      .catch((err) => setIsError(true));
+    setIsSubmit(false);
   };
   return (
     <div className="py-4 px-16 bg-gray-50 h-screen flex justify-center items-center">
       <div className="flex flex-col w-full max-w-sm p-4  rounded-2xl bg-white shadow-sm py-4  items-center">
         <h2 className="text-2xl font-bold">มายืมกัน</h2>
+        {isError && (
+          <p className="text-red-500 font-semibold">โปรดลองใหม่อีกครั้ง</p>
+        )}
         <div className="my-4 flex w-full flex-col gap-6 items-center">
           <InputForm
             size="text-md"

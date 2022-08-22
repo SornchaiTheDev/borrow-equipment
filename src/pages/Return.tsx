@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import OtpInput from "react-otp-input";
 import { Player } from "@lottiefiles/react-lottie-player";
-import { useNavigate } from "react-router-dom";
 
 function Return() {
   const [step, setStep] = useState<number>(1);
