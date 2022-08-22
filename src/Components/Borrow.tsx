@@ -84,7 +84,7 @@ function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
           />
         </div>
 
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex items-center gap-2  ">
           <input
             id="consent"
             checked={isAccept}
