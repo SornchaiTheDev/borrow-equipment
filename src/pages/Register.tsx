@@ -36,11 +36,10 @@ function Login() {
     )
       .then(({ user }: UserCredential) => {
         setUser(user.uid);
+        setIsSubmit(false);
         navigate("/info", { replace: true });
       })
       .catch(({ code }: AuthError) => setError(code));
-
-    setIsSubmit(false);
   };
 
   if (user) return <Navigate to="/" replace />;
