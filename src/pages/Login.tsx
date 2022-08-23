@@ -1,9 +1,10 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import InputForm from "../Components/InputForm";
 import AsyncBtn from "../Components/AsyncBtn";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, UserCredential } from "firebase/auth";
+import { useLocalStorage } from "usehooks-ts";
 function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -11,6 +12,9 @@ function Login() {
   const [isError, setIsError] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const [user, setUser] = useLocalStorage<string>("uid", "");
+
+  if (user) return <Navigate to="/" replace />;
 
   const handleOnSignIn = () => {
     setIsSubmit(true);
@@ -19,7 +23,10 @@ function Login() {
       `${username}@borrow-equipment.com`,
       password
     )
-      .then(() => navigate("/", { replace: true }))
+      .then(({ user }: UserCredential) => {
+        setUser(user.uid);
+        navigate("/", { replace: true });
+      })
       .catch((err) => setIsError(true));
     setIsSubmit(false);
   };

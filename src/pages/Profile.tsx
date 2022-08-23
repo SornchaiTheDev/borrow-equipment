@@ -2,12 +2,15 @@ import { BsArrowLeft } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
+import { useLocalStorage } from "usehooks-ts";
 
 function Profile() {
   const navigate = useNavigate();
+  const [_, setUser] = useLocalStorage<string>("uid", "");
 
   const handleLogout = () => {
     signOut(auth);
+    setUser("");
     navigate("/login");
   };
   return (

@@ -1,14 +1,18 @@
 import { FormEvent, useState } from "react";
 import InputForm from "../Components/InputForm";
 import AsyncBtn from "../Components/AsyncBtn";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
+import { useLocalStorage } from "usehooks-ts";
+
 function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
   const [isSubmit, setIsSubmit] = useState(false);
+  const [user, setUser] = useLocalStorage<string>("uid", "");
+
   const navigate = useNavigate();
 
   const handleOnSignUp = () => {
@@ -19,11 +23,17 @@ function Login() {
       `${username}@borrow-equipment.com`,
       password
     )
-      .then(() => navigate("/info", { replace: true }))
+      .then(({ user }: UserCredential) => {
+        setUser(user.uid);
+        navigate("/", { replace: true });
+      })
       .catch((err) => setIsError(true));
 
     setIsSubmit(false);
   };
+
+  if (user) return <Navigate to="/" replace />;
+
   return (
     <div className="py-4 px-16  bg-gray-50 h-screen flex justify-center items-center">
       <div className="flex flex-col w-full max-w-sm p-4  rounded-2xl bg-white shadow-sm  items-center">

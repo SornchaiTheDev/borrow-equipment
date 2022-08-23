@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import Item from "../Components/Item";
 import Profile from "../Components/Profile";
 import SearchBox from "../Components/SearchBox";
 import Borrow from "../Components/Borrow";
 import BorrowCode from "../Components/BorrowCode";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../firebase";
+import { Navigate } from "react-router-dom";
 
 function Home() {
   const [isBorrow, setIsBorrow] = useState<boolean>(false);
@@ -14,6 +17,21 @@ function Home() {
     setIsBorrow(false);
     setIsSuccess(true);
   };
+
+  const [user, setUser] = useState<User | null>(null);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+  }, []);
+
+  useEffect(() =>{
+    console.log(user);
+    
+  },[user])
+
+  // if(!user) return <Navigate to="/login" replace/>
+
 
   return (
     <>

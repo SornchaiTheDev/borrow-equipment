@@ -1,9 +1,13 @@
 import { db } from "../../index";
 import { collection, addDoc } from "firebase/firestore";
 
-const addDocToCollection = (collectionName: string, data: object) => {
+const addDocToCollection = async (collectionName: string, data: object) => {
   const docRef = collection(db, collectionName);
-  addDoc(docRef, data);
+  try {
+    await addDoc(docRef, data);
+  } catch (err) {
+    throw err;
+  }
 };
 
 export { addDocToCollection };
