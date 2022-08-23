@@ -8,10 +8,13 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { GrFormClose } from "react-icons/gr";
 import { TextField } from "@mui/material";
 import { Equipment } from "../interface/Equipment";
+import { addDocToCollection, update } from "../firebase/method/db";
+import { useLocalStorage } from "usehooks-ts";
+import { increment } from "firebase/firestore";
 
 interface BorrowProps {
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (code: string) => void;
   item: Equipment;
 }
 
@@ -21,8 +24,10 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
   const [isAccept, setIsAccept] = useState<boolean>(false);
 
   const [borrowDate, setBorrowDate] = useState<Date | null>(
-    new Date("2022-08-13T21:11:54")
+    new Date()
   );
+
+  const [uid] = useLocalStorage("uid", "");
 
   const handleAmount = ({ type }: { type: "INCREMENT" | "DECREMENT" }) => {
     if (borrowAmount < 2 && type === "DECREMENT") return;
@@ -31,13 +36,28 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
     if (type === "DECREMENT") setBorrowAmount(borrowAmount - 1);
   };
 
-  const handleBorrow = () => {
+  const handleBorrow = async () => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
     if (!isAccept) return;
     setIsBorrow(true);
-    setTimeout(() => {
-      setIsBorrow(false);
-      onSuccess();
-    }, 1000);
+    await addDocToCollection("borrow", {
+      item: item.name,
+      uid,
+      borrowAmount,
+      borrowDate,
+      code,
+    });
+    await addDocToCollection(`users/${uid}/history`, {
+      item: item.name,
+      borrowAmount,
+      borrowDate,
+    });
+
+    await update(`equipments/${item.id}`, { amount: increment(-borrowAmount) });
+
+    setIsBorrow(false);
+    onSuccess(code);
   };
 
   const handleChange = (newValue: Date | null) => {
@@ -86,7 +106,7 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
           <input
             id="consent"
             checked={isAccept}
-            onClick={() => setIsAccept(!isAccept)}
+            onChange={() => setIsAccept(!isAccept)}
             type="checkbox"
           />
           <label htmlFor="consent">

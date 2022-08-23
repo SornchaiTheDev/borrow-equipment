@@ -2,13 +2,27 @@ import { useEffect, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import OtpInput from "react-otp-input";
 import { Player } from "@lottiefiles/react-lottie-player";
+import { auth } from "../firebase/index";
+import { signOut } from "firebase/auth";
+import { useLocalStorage } from "usehooks-ts";
 
 function Return() {
   const [step, setStep] = useState<number>(1);
+  const [_, setUid] = useLocalStorage("uid", "");
+  const handleLogout = () => {
+    signOut(auth);
+    setUid("");
+  };
 
   return (
-    <div className="py-4 px-4 md:px-16 min-h-screen flex justify-center items-center w-full">
-      <div className="flex flex-col max-w-md p-4  rounded-2xl bg-white shadow-sm py-4 w-full gap-4 items-center">
+    <div className="py-4 px-4 md:px-16 min-h-screen flex flex-col justify-center items-center w-full">
+      <div className="flex flex-col max-w-md p-4  rounded-2xl bg-white shadow-sm py-4 w-full gap-4 items-center relative">
+        <button
+          className="bg-red-300 text-red-500 p-2 rounded-lg self-end absolute right-2 -top-12"
+          onClick={handleLogout}
+        >
+          ออกจากระบบ
+        </button>
         {step === 1 ? (
           <FirstStep toSteptwo={() => setStep(2)} />
         ) : (
@@ -70,6 +84,7 @@ const FirstStep = ({ toSteptwo }: { toSteptwo: () => void }) => {
       toSteptwo();
     }, 1000);
   };
+
   return (
     <>
       <h2 className="text-center text-xl font-semibold mt-2">

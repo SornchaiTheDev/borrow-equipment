@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { GrFormClose } from "react-icons/gr";
 import Button from "./Button";
 
 interface BorrowCodeProps {
   onClose: () => void;
+  code: string;
 }
 
-function BorrowCode({ onClose }: BorrowCodeProps) {
+function BorrowCode({ onClose, code }: BorrowCodeProps) {
   return (
     <div className="h-screen flex justify-center items-center w-full bg-black bg-opacity-20 absolute z-40">
       <div className="flex flex-col items-center max-w-md p-4  rounded-2xl bg-white shadow-sm py-4 w-full gap-6">
@@ -19,7 +18,7 @@ function BorrowCode({ onClose }: BorrowCodeProps) {
         </p>
         <div className="my-6">
           <div className="border-2 border-gray-50 bg-gray-100 p-4 rounded-lg">
-            <h2 className="text-4xl">2GH8SX</h2>
+            <h2 className="text-4xl">{code}</h2>
           </div>
         </div>
 

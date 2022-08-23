@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -6,9 +5,11 @@ import Register from "./pages/Register";
 import Info from "./pages/Info";
 import Profile from "./pages/Profile";
 import Return from "./pages/Return";
+import Admin from "./pages/Admin";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import AdminRoute from "./Components/AdminRoute";
 
 function App() {
   return (
@@ -26,14 +27,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route
-            path="/info"
-            element={
-              <ProtectedRoute>
-                <Info />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/info" element={<Info />} />
           <Route
             path="/profile"
             element={
@@ -45,11 +39,13 @@ function App() {
           <Route
             path="/return"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Return />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
+
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </BrowserRouter>
     </LocalizationProvider>

@@ -13,9 +13,11 @@ function Home() {
   const [isBanned, setIsBanned] = useState<boolean>(false);
   const [equipments, setEquipments] = useState<Equipment[]>([]);
   const [borrow, setBorrow] = useState<Equipment | null>(null);
+  const [code, setCode] = useState<string>("");
   const [uid, _] = useLocalStorage("uid", "");
 
-  const handleOnSuccess = () => {
+  const handleOnSuccess = (code: string) => {
+    setCode(code);
     setBorrow(null);
     setIsSuccess(true);
   };
@@ -44,7 +46,9 @@ function Home() {
           onSuccess={handleOnSuccess}
         />
       )}
-      {isSuccess && <BorrowCode onClose={() => setIsSuccess(false)} />}
+      {isSuccess && (
+        <BorrowCode code={code} onClose={() => document.location.reload()} />
+      )}
 
       <div className="py-4 px-4 md:px-16 min-h-screen flex justify-center items-center w-full">
         <div className="flex flex-col max-w-xl p-4  rounded-2xl bg-white shadow-sm py-4 w-full gap-4">
