@@ -5,13 +5,21 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import { auth } from "../firebase/index";
 import { signOut } from "firebase/auth";
 import { useLocalStorage } from "usehooks-ts";
+import { update, findDocumentByField } from "../firebase/method/db";
 
+type status = "success" | "failed";
 function Return() {
   const [step, setStep] = useState<number>(1);
-  const [_, setUid] = useLocalStorage("uid", "");
+  const [uid, setUid] = useLocalStorage("uid", "");
+  const [status, setStatus] = useState<status>("success");
   const handleLogout = () => {
     signOut(auth);
     setUid("");
+  };
+
+  const handleToStepTwo = (status: status) => {
+    setStep(2);
+    setStatus(status);
   };
 
   return (
@@ -24,9 +32,9 @@ function Return() {
           ออกจากระบบ
         </button>
         {step === 1 ? (
-          <FirstStep toSteptwo={() => setStep(2)} />
+          <FirstStep toSteptwo={handleToStepTwo} />
         ) : (
-          <SecondStep status="success" backtoOne={() => setStep(1)} />
+          <SecondStep status={status} backtoOne={() => setStep(1)} />
         )}
       </div>
     </div>
@@ -35,37 +43,11 @@ function Return() {
 
 export default Return;
 
-const SecondStep = ({
-  status,
-  backtoOne,
-}: {
-  status: "success" | "failed";
-  backtoOne: () => void;
-}) => {
-  useEffect(() => {
-    setTimeout(() => {
-      backtoOne();
-    }, 3000);
-  }, []);
-  const animation =
-    status === "success"
-      ? "https://assets6.lottiefiles.com/packages/lf20_jbrw3hcz.json"
-      : "https://assets5.lottiefiles.com/packages/lf20_reg7q42p.json";
-  return (
-    <div className="p-6">
-      <h1 className="text-xl text-center my-4 font-bold">
-        {status === "success" ? "คืนสำเร็จ" : "คืนไม่สำเร็จ"}
-      </h1>
-      {status === "failed" && <p className="text-center">ไม่พบรหัสการยืมนี้</p>}
-      <Player src={animation} autoplay />
-    </div>
-  );
-};
-
-const FirstStep = ({ toSteptwo }: { toSteptwo: () => void }) => {
+const FirstStep = ({ toSteptwo }: { toSteptwo: (status: status) => void }) => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
   const [code, setCode] = useState<string>("");
+  const [uid] = useLocalStorage("uid", "");
 
   useEffect(() => {
     if (code.length === 6) {
@@ -75,14 +57,23 @@ const FirstStep = ({ toSteptwo }: { toSteptwo: () => void }) => {
     }
   }, [code]);
 
-  const handleReturn = () => {
+  const handleReturn = async () => {
     if (isSubmit) return;
     setIsSubmit(true);
-    setTimeout(() => {
-      setIsSubmit(false);
-      setCode("");
-      toSteptwo();
-    }, 1000);
+    const doc = await findDocumentByField(`borrow`, "code", "==", code);
+    console.log(doc);
+    if (doc.length === 0) {
+      return toSteptwo("failed");
+    }
+
+    const status = await update(`users/${doc[0].uid}/history/${doc[0].id}`, {
+      status: "return",
+    });
+    console.log(status);
+
+    // setIsSubmit(false);
+    // setCode("");
+    // toSteptwo("success");
   };
 
   return (
@@ -121,5 +112,32 @@ const FirstStep = ({ toSteptwo }: { toSteptwo: () => void }) => {
         </button>
       </div>
     </>
+  );
+};
+
+const SecondStep = ({
+  status,
+  backtoOne,
+}: {
+  status: "success" | "failed";
+  backtoOne: () => void;
+}) => {
+  useEffect(() => {
+    setTimeout(() => {
+      backtoOne();
+    }, 3000);
+  }, []);
+  const animation =
+    status === "success"
+      ? "https://assets6.lottiefiles.com/packages/lf20_jbrw3hcz.json"
+      : "https://assets5.lottiefiles.com/packages/lf20_reg7q42p.json";
+  return (
+    <div className="p-6">
+      <h1 className="text-xl text-center my-4 font-bold">
+        {status === "success" ? "คืนสำเร็จ" : "คืนไม่สำเร็จ"}
+      </h1>
+      {status === "failed" && <p className="text-center">ไม่พบรหัสการยืมนี้</p>}
+      <Player src={animation} autoplay />
+    </div>
   );
 };

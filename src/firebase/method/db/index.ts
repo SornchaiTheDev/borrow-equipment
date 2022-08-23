@@ -1,5 +1,12 @@
-import { addDocToCollection } from "./add";
-import { getDocument, getAllFromCollection } from "./get";
+import { addDocToCollection, setDocToCollection } from "./add";
+import { getDocument, getAllFromCollection, findDocumentByField } from "./get";
 import { update } from "./update";
 
-export { addDocToCollection, getDocument, getAllFromCollection, update };
+export {
+  addDocToCollection,
+  setDocToCollection,
+  getDocument,
+  getAllFromCollection,
+  update,
+  findDocumentByField,
+};

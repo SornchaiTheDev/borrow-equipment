@@ -8,9 +8,10 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { GrFormClose } from "react-icons/gr";
 import { TextField } from "@mui/material";
 import { Equipment } from "../interface/Equipment";
-import { addDocToCollection, update } from "../firebase/method/db";
+import { setDocToCollection, update } from "../firebase/method/db";
 import { useLocalStorage } from "usehooks-ts";
 import { increment } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 
 interface BorrowProps {
   onClose: () => void;
@@ -23,9 +24,7 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
   const [borrowAmount, setBorrowAmount] = useState<number>(1);
   const [isAccept, setIsAccept] = useState<boolean>(false);
 
-  const [borrowDate, setBorrowDate] = useState<Date | null>(
-    new Date()
-  );
+  const [borrowDate, setBorrowDate] = useState<Date | null>(new Date());
 
   const [uid] = useLocalStorage("uid", "");
 
@@ -38,20 +37,23 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
 
   const handleBorrow = async () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const docId = uuidv4();
 
     if (!isAccept) return;
     setIsBorrow(true);
-    await addDocToCollection("borrow", {
+    await setDocToCollection("borrow", docId, {
       item: item.name,
       uid,
       borrowAmount,
       borrowDate,
       code,
     });
-    await addDocToCollection(`users/${uid}/history`, {
+    await setDocToCollection(`users/${uid}/history`, docId, {
       item: item.name,
       borrowAmount,
       borrowDate,
+      status: "on-borrow",
+      code,
     });
 
     await update(`equipments/${item.id}`, { amount: increment(-borrowAmount) });

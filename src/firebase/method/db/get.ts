@@ -5,6 +5,10 @@ import {
   collection,
   getDocs,
   DocumentData,
+  where,
+  query,
+  FieldPath,
+  WhereFilterOp,
 } from "firebase/firestore";
 
 const getDocument = async (path: string) => {
@@ -28,4 +32,25 @@ const getAllFromCollection = async (collectionId: string) => {
     throw err;
   }
 };
-export { getDocument, getAllFromCollection };
+
+const findDocumentByField = async (
+  collectionId: string,
+  ...condition: [
+    fieldPath: string | FieldPath,
+    opStr: WhereFilterOp,
+    value: unknown
+  ]
+) => {
+  console.log(condition);
+  try {
+    const collectionRef = collection(db, collectionId);
+    const queryRef = query(collectionRef, where(...condition));
+    const docs = await getDocs(queryRef);
+    const allDocs: DocumentData[] = [];
+    docs.forEach((doc) => allDocs.push({ id: doc.id, ...doc.data() }));
+    return allDocs;
+  } catch (err) {
+    throw err;
+  }
+};
+export { getDocument, getAllFromCollection, findDocumentByField };
