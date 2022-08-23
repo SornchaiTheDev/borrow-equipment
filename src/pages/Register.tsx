@@ -1,22 +1,33 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import InputForm from "../Components/InputForm";
 import AsyncBtn from "../Components/AsyncBtn";
 import { Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
-import { createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
+import {
+  Auth,
+  AuthError,
+  createUserWithEmailAndPassword,
+  UserCredential,
+} from "firebase/auth";
 import { useLocalStorage } from "usehooks-ts";
+
+const handleError = (err: string) => {
+  if (err === "auth/email-already-in-use") return "มีชื่อผู้ใช้นี้อยู่แล้ว";
+  if (err === "auth/weak-password") return "ไม่สามารถใช้รหัสผ่านนี้ได้";
+  return "โปรดลองใหม่อีกครั้ง";
+};
 
 function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isError, setIsError] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [isSubmit, setIsSubmit] = useState(false);
   const [user, setUser] = useLocalStorage<string>("uid", "");
 
   const navigate = useNavigate();
 
   const handleOnSignUp = () => {
-    setIsError(false);
+    setError(null);
     setIsSubmit(true);
     createUserWithEmailAndPassword(
       auth,
@@ -25,9 +36,9 @@ function Login() {
     )
       .then(({ user }: UserCredential) => {
         setUser(user.uid);
-        navigate("/", { replace: true });
+        navigate("/info", { replace: true });
       })
-      .catch((err) => setIsError(true));
+      .catch(({ code }: AuthError) => setError(code));
 
     setIsSubmit(false);
   };
@@ -38,8 +49,8 @@ function Login() {
     <div className="py-4 px-16  bg-gray-50 h-screen flex justify-center items-center">
       <div className="flex flex-col w-full max-w-sm p-4  rounded-2xl bg-white shadow-sm  items-center">
         <h2 className="text-2xl font-bold">มายืมกัน</h2>
-        {isError && (
-          <p className="text-red-500 font-semibold">โปรดลองใหม่อีกครั้ง</p>
+        {error && (
+          <p className="text-red-500 font-semibold">{handleError(error)}</p>
         )}
 
         <div className="my-4 flex w-full flex-col gap-6 items-center">
