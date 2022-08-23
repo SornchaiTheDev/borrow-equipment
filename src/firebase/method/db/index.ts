@@ -1,3 +1,4 @@
 import { addDocToCollection } from "./add";
+import { getDocument, getAllFromCollection } from "./get";
 
-export { addDocToCollection };
+export { addDocToCollection, getDocument, getAllFromCollection };

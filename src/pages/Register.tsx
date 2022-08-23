@@ -39,7 +39,10 @@ function Login() {
         setIsSubmit(false);
         navigate("/info", { replace: true });
       })
-      .catch(({ code }: AuthError) => setError(code));
+      .catch(({ code }: AuthError) => {
+        setError(code);
+        setIsSubmit(false);
+      });
   };
 
   if (user) return <Navigate to="/" replace />;

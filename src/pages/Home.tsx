@@ -1,44 +1,46 @@
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import Item from "../Components/Item";
 import Profile from "../Components/Profile";
 import SearchBox from "../Components/SearchBox";
 import Borrow from "../Components/Borrow";
 import BorrowCode from "../Components/BorrowCode";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "../firebase";
-import { Navigate } from "react-router-dom";
+import { getDocument, getAllFromCollection } from "../firebase/method/db";
+import { useLocalStorage } from "usehooks-ts";
+import { Equipment } from "../interface/Equipment";
 
 function Home() {
-  const [isBorrow, setIsBorrow] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const isBanned = true;
+  const [isBanned, setIsBanned] = useState<boolean>(false);
+  const [equipments, setEquipments] = useState<Equipment[]>([]);
+  const [borrow, setBorrow] = useState<Equipment | null>(null);
+  const [uid, _] = useLocalStorage("uid", "");
 
   const handleOnSuccess = () => {
-    setIsBorrow(false);
+    setBorrow(null);
     setIsSuccess(true);
   };
-
-  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
+    getDocument(`users/${uid}`).then((user) =>
+      setIsBanned(user!.status === "banned")
+    );
+    getAllFromCollection("equipments").then((result) =>
+      setEquipments(result as Equipment[])
+    );
   }, []);
 
-  useEffect(() =>{
-    console.log(user);
-    
-  },[user])
-
-  // if(!user) return <Navigate to="/login" replace/>
-
+  if (equipments.length === 0)
+    return (
+      <div className="flex justify-center items-center w-full min-h-screen">
+        <h2 className="text-lg">กำลังโหลด...</h2>
+      </div>
+    );
 
   return (
     <>
-      {isBorrow && (
+      {borrow && (
         <Borrow
-          amount={10}
-          onClose={() => setIsBorrow(false)}
+          item={borrow}
+          onClose={() => setBorrow(null)}
           onSuccess={handleOnSuccess}
         />
       )}
@@ -50,43 +52,22 @@ function Home() {
             <SearchBox />
             <Profile />
           </div>
-          <p className="text-red-500 font-bold">*บัญชีของคุณถูกระงับ</p>
+          {isBanned && (
+            <p className="text-red-500 font-bold">*บัญชีของคุณถูกระงับ</p>
+          )}
           <div className="grid grid-cols-6 gap-4 w-full">
-            <Item
-              onClick={() => 0 > 0 && !isBanned && setIsBorrow(true)}
-              name="บาสเกตบอล"
-              icon="https://contents.mediadecathlon.com/p2154429/k$2fc1fe4d01a5e4dbaea0aa9ece21ad8d/size-7-basketball-bt100-for-men-ages-13-and-up-orange.jpg?&f=250x250"
-              amount={20}
-              disabled
-            />
-            <Item
-              onClick={() => 0 > 0 && !isBanned && setIsBorrow(true)}
-              name="ฟุตบอล"
-              icon="https://contents.mediadecathlon.com/p1823211/ab29e26cdc9a9f2a72fc21f2377b9164/p1823211.jpg?f=480x480&format=auto"
-              amount={0}
-              disabled
-            />
-            <Item
-              onClick={() => 0 > 0 && !isBanned && setIsBorrow(true)}
-              name="วอลเลย์บอล"
-              icon="https://contents.mediadecathlon.com/p1571705/afe5b578021e8bd054dadaf9b8d42b9f/p1571705.jpg?f=480x480&format=auto"
-              amount={20}
-              disabled
-            />
-            <Item
-              onClick={() => 0 > 0 && !isBanned && setIsBorrow(true)}
-              name="ไม้ปิงปอง"
-              icon="https://contents.mediadecathlon.com/p1278611/1e024637b46a95b7e5fc031bb0061527/p1278611.jpg?f=480x480&format=auto"
-              amount={20}
-              disabled
-            />
-            <Item
-              onClick={() => 0 > 0 && !isBanned && setIsBorrow(true)}
-              name="ไม้แบดมินตัน"
-              icon="https://contents.mediadecathlon.com/p2122365/0a2412a16125f3c59f6c7f2be5880798/p2122365.jpg?f=480x480&format=auto"
-              amount={20}
-              disabled
-            />
+            {equipments.map((item) => (
+              <Item
+                key={item.id}
+                onClick={() =>
+                  !isBanned && item.amount !== 0 && setBorrow(item)
+                }
+                name={item.name}
+                icon={item.icon}
+                amount={item.amount}
+                disabled={isBanned || item.amount === 0}
+              />
+            ))}
           </div>
         </div>
       </div>

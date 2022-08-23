@@ -1,13 +1,27 @@
 import { db } from "../../index";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
 
 const addDocToCollection = async (collectionName: string, data: object) => {
-  const docRef = collection(db, collectionName);
+  const collectionRef = collection(db, collectionName);
   try {
-    await addDoc(docRef, data);
+    await addDoc(collectionRef, data);
   } catch (err) {
     throw err;
   }
 };
 
-export { addDocToCollection };
+const setDocToCollection = async (
+  collectionName: string,
+  docId: string,
+  data: object,
+  merge: boolean = false
+) => {
+  const docRef = doc(db, collectionName, docId);
+  try {
+    await setDoc(docRef, data, { merge });
+  } catch (err) {
+    throw err;
+  }
+};
+
+export { addDocToCollection, setDocToCollection };

@@ -7,14 +7,15 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { GrFormClose } from "react-icons/gr";
 import { TextField } from "@mui/material";
+import { Equipment } from "../interface/Equipment";
 
 interface BorrowProps {
-  amount: number;
   onClose: () => void;
   onSuccess: () => void;
+  item: Equipment;
 }
 
-function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
+function Borrow({ item, onClose, onSuccess }: BorrowProps) {
   const [isBorrow, setIsBorrow] = useState<boolean>(false);
   const [borrowAmount, setBorrowAmount] = useState<number>(1);
   const [isAccept, setIsAccept] = useState<boolean>(false);
@@ -25,7 +26,7 @@ function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
 
   const handleAmount = ({ type }: { type: "INCREMENT" | "DECREMENT" }) => {
     if (borrowAmount < 2 && type === "DECREMENT") return;
-    if (borrowAmount >= amount && type === "INCREMENT") return;
+    if (borrowAmount >= item.amount && type === "INCREMENT") return;
     if (type === "INCREMENT") setBorrowAmount(borrowAmount + 1);
     if (type === "DECREMENT") setBorrowAmount(borrowAmount - 1);
   };
@@ -53,12 +54,9 @@ function Borrow({ amount, onClose, onSuccess }: BorrowProps) {
           <GrFormClose size="1.5rem" />
           <h2>ปิดหน้าต่าง</h2>
         </button>
-        <h2 className="text-xl font-semibold">ยืมบาสเกตบอล</h2>
+        <h2 className="text-xl font-semibold">ยืม{item.name}</h2>
         <div className="w-48 rounded-2xl overflow-hidden">
-          <img
-            src="https://contents.mediadecathlon.com/p2154429/k$2fc1fe4d01a5e4dbaea0aa9ece21ad8d/size-7-basketball-bt100-for-men-ages-13-and-up-orange.jpg?&f=250x250"
-            className="w-full"
-          />
+          <img src={item.icon} className="w-full" />
         </div>
         <div className="flex items-center gap-4">
           <button

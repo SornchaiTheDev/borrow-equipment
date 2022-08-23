@@ -3,6 +3,8 @@ import InputForm from "../Components/InputForm";
 import AsyncButton from "../Components/AsyncBtn";
 import { addDocToCollection } from "../firebase/method/db";
 import { useNavigate } from "react-router-dom";
+import { useLocalStorage } from "usehooks-ts";
+import { setDocToCollection } from "../firebase/method/db/add";
 
 function Info() {
   const [fullName, setFullName] = useState<string>("");
@@ -10,12 +12,18 @@ function Info() {
   const [telephone, setTelephone] = useState<string>("");
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [uid] = useLocalStorage("uid", "");
 
   const handleOnSubmit = async () => {
     setIsSubmit(true);
 
     try {
-      await addDocToCollection("users", { fullName, studentId, telephone });
+      await setDocToCollection("users", uid, {
+        fullName,
+        studentId,
+        telephone,
+        status: "normal",
+      });
       navigate("/", { replace: true });
     } catch (err) {}
 

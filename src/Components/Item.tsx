@@ -19,7 +19,7 @@ function Item({ name, icon, amount, onClick, disabled }: ItemProps) {
           <img
             src={icon}
             alt={`${name}`}
-            className={`w-full ${amount === 0  || disabled && "grayscale"}`}
+            className={`w-full ${(amount === 0 || disabled) && "grayscale"}`}
           />
         </div>
         <div className="flex flex-col bg-white w-full mt-2">

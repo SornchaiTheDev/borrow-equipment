@@ -40,7 +40,10 @@ function Login() {
         setIsSubmit(false);
         navigate("/", { replace: true });
       })
-      .catch(({ code }: AuthError) => setError(code));
+      .catch(({ code }: AuthError) => {
+        setError(code);
+        setIsSubmit(false);
+      });
   };
   return (
     <div className="py-4 px-16 bg-gray-50 h-screen flex justify-center items-center">
