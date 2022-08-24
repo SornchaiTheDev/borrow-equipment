@@ -47,7 +47,11 @@ function Home() {
         />
       )}
       {isSuccess && (
-        <BorrowCode code={code} onClose={() => document.location.reload()} />
+        <BorrowCode
+          from="home"
+          code={code}
+          onClose={() => document.location.reload()}
+        />
       )}
 
       <div className="py-4 px-4 md:px-16 min-h-screen flex justify-center items-center w-full">
