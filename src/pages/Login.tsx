@@ -3,6 +3,7 @@ import InputForm from "../Components/InputForm";
 import AsyncBtn from "../Components/AsyncBtn";
 import { Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
+import { getDocument } from "../firebase/method/db";
 import {
   AuthError,
   signInWithEmailAndPassword,
@@ -11,7 +12,6 @@ import {
 import { useLocalStorage } from "usehooks-ts";
 
 const handleError = (err: string) => {
-  console.log(err);
   if (err === "auth/user-not-found") return "ไม่พบผู้ใช้นี้";
   if (err === "auth/wrong-password") return "รหัสผ่านผิด";
   return "โปรดลองใหม่อีกครั้ง";

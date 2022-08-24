@@ -4,13 +4,14 @@ import OtpInput from "react-otp-input";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { auth } from "../firebase/index";
 import { signOut } from "firebase/auth";
+import { increment, where } from "firebase/firestore";
 import { useLocalStorage } from "usehooks-ts";
 import { update, findDocumentByField } from "../firebase/method/db";
 
-type status = "success" | "failed";
+type status = "success" | "failed" | "not-found";
 function Return() {
   const [step, setStep] = useState<number>(1);
-  const [uid, setUid] = useLocalStorage("uid", "");
+  const [_, setUid] = useLocalStorage("uid", "");
   const [status, setStatus] = useState<status>("success");
   const handleLogout = () => {
     signOut(auth);
@@ -60,20 +61,36 @@ const FirstStep = ({ toSteptwo }: { toSteptwo: (status: status) => void }) => {
   const handleReturn = async () => {
     if (isSubmit) return;
     setIsSubmit(true);
-    const doc = await findDocumentByField(`borrow`, "code", "==", code);
-    console.log(doc);
-    if (doc.length === 0) {
-      return toSteptwo("failed");
+    try {
+      const doc = await findDocumentByField(
+        "borrow",
+        where("code", "==", code),
+        where("status", "==", "on-borrow")
+      );
+
+      if (doc.length === 0) {
+        return toSteptwo("not-found");
+      }
+
+      await update(`equipments/${doc[0].item.id}`, {
+        amount: increment(doc[0].borrowAmount),
+      });
+      await update(`users/${doc[0].uid}/history/${doc[0].id}`, {
+        status: "returned",
+      });
+
+      await update(`borrow/${doc[0].id}`, {
+        status: "returned",
+      });
+
+      await update(`users/${doc[0].uid}`, { latestBorrowDate: null });
+      toSteptwo("success");
+    } catch (err) {
+      toSteptwo("failed");
     }
 
-    const status = await update(`users/${doc[0].uid}/history/${doc[0].id}`, {
-      status: "return",
-    });
-    console.log(status);
-
-    // setIsSubmit(false);
-    // setCode("");
-    // toSteptwo("success");
+    setIsSubmit(false);
+    setCode("");
   };
 
   return (
@@ -119,7 +136,7 @@ const SecondStep = ({
   status,
   backtoOne,
 }: {
-  status: "success" | "failed";
+  status: status;
   backtoOne: () => void;
 }) => {
   useEffect(() => {
@@ -136,7 +153,10 @@ const SecondStep = ({
       <h1 className="text-xl text-center my-4 font-bold">
         {status === "success" ? "คืนสำเร็จ" : "คืนไม่สำเร็จ"}
       </h1>
-      {status === "failed" && <p className="text-center">ไม่พบรหัสการยืมนี้</p>}
+      {status === "not-found" && (
+        <p className="text-center">ไม่พบรหัสการยืมนี้</p>
+      )}
+      {status === "failed" && <p className="text-center">มีบางอย่างผิดพลาด</p>}
       <Player src={animation} autoplay />
     </div>
   );

@@ -23,6 +23,9 @@ function Info() {
         studentId,
         telephone,
         status: "normal",
+        role: "user",
+        bannedDate: null,
+        latestBorrowDate: null,
       });
       navigate("/", { replace: true });
     } catch (err) {}

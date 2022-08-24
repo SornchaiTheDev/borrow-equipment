@@ -9,6 +9,8 @@ import { User } from "../interface/User";
 import Button from "../Components/Button";
 import BorrowCode from "../Components/BorrowCode";
 import { months } from "../helpers/months";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 
 interface History {
   item: string;
@@ -90,12 +92,10 @@ function Profile() {
                   {history.map(
                     ({ item, borrowAmount, borrowDate, code, status }) => {
                       const date = new Date(borrowDate.seconds * 1000);
-                      const day = date.getDate();
-                      const month = months[date.getMonth()];
-                      const year = date.getFullYear() + 543;
+
                       const time = date.getHours() + ":" + date.getMinutes();
                       let statusText =
-                        status === "finished" ? "คืนแล้ว" : "ยังไม่คืน";
+                        status === "returned" ? "คืนแล้ว" : "ยังไม่คืน";
 
                       return (
                         <tr key={code}>
@@ -103,9 +103,9 @@ function Profile() {
                             ลูก{item} {borrowAmount} ลูก
                           </td>
                           <td className="p-2">
-                            {day} {month} {year}
+                            {format(date, "dd  MMM yyyy", { locale: th })}
                           </td>
-                          <td className="p-2">{time}</td>
+                          <td className="p-2">{format(date, "HH:mm")}</td>
                           <td className="p-2">{statusText}</td>
                           <td className="p-2">
                             <Button

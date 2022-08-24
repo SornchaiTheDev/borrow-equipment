@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   AiOutlinePlus,
   AiOutlineMinus,
@@ -10,7 +10,7 @@ import { TextField } from "@mui/material";
 import { Equipment } from "../interface/Equipment";
 import { setDocToCollection, update } from "../firebase/method/db";
 import { useLocalStorage } from "usehooks-ts";
-import { increment } from "firebase/firestore";
+import { increment, serverTimestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
 interface BorrowProps {
@@ -42,11 +42,12 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
     if (!isAccept) return;
     setIsBorrow(true);
     await setDocToCollection("borrow", docId, {
-      item: item.name,
+      item,
       uid,
       borrowAmount,
       borrowDate,
       code,
+      status: "on-borrow",
     });
     await setDocToCollection(`users/${uid}/history`, docId, {
       item: item.name,
@@ -55,6 +56,8 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
       status: "on-borrow",
       code,
     });
+
+    await update(`users/${uid}`, { latestBorrowDate: serverTimestamp() });
 
     await update(`equipments/${item.id}`, { amount: increment(-borrowAmount) });
 
@@ -97,6 +100,7 @@ function Borrow({ item, onClose, onSuccess }: BorrowProps) {
         </div>
         <div className="mt-4">
           <DateTimePicker
+            minDate={new Date()}
             label="วันที่/เวลาที่ยืม"
             value={borrowDate}
             onChange={handleChange}
